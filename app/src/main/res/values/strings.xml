@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">WeatherJava</string>
+    <string name="search_failed">Retrieving search results failed</string>
+    <string name="find_your_city">Find your city…</string>
+    <string name="click_on_the_map_to_see_weather_for_that_location">Click on the map to see weather for that location.</string>
+    <string name="map">Map</string>
+</resources>
