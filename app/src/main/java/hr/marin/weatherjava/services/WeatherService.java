@@ -30,7 +30,7 @@ public class WeatherService {
         });
     }
 
-    public void findLocationByCoordinates(String latitude, String longitude, final IWeatherServiceListener<List<SearchResult>> handleWeatherService) {
+    public void findLocationByCoordinates(double latitude, double longitude, final IWeatherServiceListener<List<SearchResult>> handleWeatherService) {
         String joinedCoordinates = latitude + "," + longitude;
         Call<List<SearchResult>> call = service.findLocationByCoordinates(joinedCoordinates);
         call.enqueue(new Callback<List<SearchResult>>() {
@@ -46,8 +46,8 @@ public class WeatherService {
         });
     }
 
-    public void getLocationWeather(String id, final IWeatherServiceListener<Location> handleWeatherService) {
-        Call<Location> call = service.getLocationWeather(id);
+    public void getLocationWeather(int woeId, final IWeatherServiceListener<Location> handleWeatherService) {
+        Call<Location> call = service.getLocationWeather(woeId);
         call.enqueue(new Callback<Location>() {
             @Override
             public void onResponse(@NonNull Call<Location> call, @NonNull Response<Location> response) {

@@ -21,7 +21,7 @@ public class WeatherPresenter {
     }
 
     public String formatDate(String oldString, String newFormat) {
-        final String OLD_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
+        final String OLD_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSX";
 
         SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.US);
         Date d = null;
@@ -49,7 +49,7 @@ public class WeatherPresenter {
             return sdf.format(d);
     }
 
-    public void getLocationWeather(String id) {
+    public void getLocationWeather(int id) {
         view.showLoader();
         service.getLocationWeather(id, new IWeatherServiceListener<Location>() {
             @Override

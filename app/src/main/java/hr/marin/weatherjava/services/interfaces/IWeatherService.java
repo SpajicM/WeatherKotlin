@@ -18,5 +18,5 @@ public interface IWeatherService {
     Call<List<SearchResult>> findLocationByCoordinates(@Query("lattlong") String coordinates);
 
     @GET("api/location/location/{id}")
-    Call<Location> getLocationWeather(@Path("id") String id);
+    Call<Location> getLocationWeather(@Path("id") int id);
 }

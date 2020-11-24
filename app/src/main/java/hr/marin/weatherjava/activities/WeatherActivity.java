@@ -1,5 +1,6 @@
 package hr.marin.weatherjava.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import hr.marin.weatherjava.R;
 import hr.marin.weatherjava.models.ConsolidatedWeather;
 import hr.marin.weatherjava.models.Location;
+import hr.marin.weatherjava.presenters.MapPresenter;
 import hr.marin.weatherjava.presenters.WeatherPresenter;
 
 public class WeatherActivity extends AppCompatActivity implements WeatherPresenter.View{
@@ -55,8 +57,15 @@ public class WeatherActivity extends AppCompatActivity implements WeatherPresent
         mainContainer = findViewById(R.id.mainContainer);
 
         presenter = new WeatherPresenter(this);
-        presenter.getLocationWeather("44418");
 
+        Intent intent = getIntent();
+        int cityId = intent.getIntExtra(MapActivity.INTENT_CITY_ID, 0);
+
+        if(cityId != 0) {
+            presenter.getLocationWeather(cityId);
+        } else {
+            onError();
+        }
     }
 
     @Override

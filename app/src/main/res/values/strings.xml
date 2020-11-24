@@ -4,4 +4,6 @@
     <string name="find_your_city">Find your city…</string>
     <string name="click_on_the_map_to_see_weather_for_that_location">Click on the map to see weather for that location.</string>
     <string name="map">Map</string>
+    <string name="permission_needed">Location Permission Needed</string>
+    <string name="permission_needed_description">This app needs the Location permission, please accept to use location functionality</string>
 </resources>

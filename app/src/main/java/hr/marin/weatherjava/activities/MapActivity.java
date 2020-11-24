@@ -1,9 +1,9 @@
 package hr.marin.weatherjava.activities;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -18,33 +18,32 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import hr.marin.weatherjava.R;
+import hr.marin.weatherjava.presenters.MapPresenter;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, MapPresenter.View {
+    public static final String INTENT_CITY_ID = "CITY_ID";
+
     GoogleMap mGoogleMap;
     SupportMapFragment mapFrag;
     LocationRequest mLocationRequest;
     Location mLastLocation;
     FusedLocationProviderClient mFusedLocationClient;
 
+    private MapPresenter presenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        getSupportActionBar().setTitle("Map Location Activity");
+        presenter = new MapPresenter(this);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -76,43 +75,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // Setting a click event handler for the map
         googleMap.setOnMapClickListener(latLng -> {
-
-            // Creating a marker
-            MarkerOptions markerOptions = new MarkerOptions();
-
-            // Setting the position for the marker
-            markerOptions.position(latLng);
-
-            // Setting the title for the marker.
-            // This will be displayed on taping the marker
-            markerOptions.title(latLng.latitude + " : " + latLng.longitude);
-
-            // Clears the previously touched position
-            googleMap.clear();
-
-            // Animating to the touched position
-            googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-
-            // Placing a marker on the touched position
-            googleMap.addMarker(markerOptions);
+            presenter.getCoordinatesCity(latLng.latitude, latLng.longitude);
         });
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                //Location Permission already granted
-                mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                mGoogleMap.setMyLocationEnabled(true);
-            } else {
-                //Request Location Permission
-                checkLocationPermission();
-            }
-        }
-        else {
-            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-            mGoogleMap.setMyLocationEnabled(true);
-        }
+        presenter.requestPermissions();
     }
 
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -132,63 +98,38 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     };
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    private void checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                new AlertDialog.Builder(this)
-                        .setTitle("Location Permission Needed")
-                        .setMessage("This app needs the Location permission, please accept to use location functionality")
-                        .setPositiveButton("OK", (dialogInterface, i) -> {
-                            //Prompt the user once explanation has been shown
-                            ActivityCompat.requestPermissions(MapActivity.this,
-                                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                    MY_PERMISSIONS_REQUEST_LOCATION );
-                        })
-                        .create()
-                        .show();
-
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION );
-            }
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION) {// If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        presenter.onRequestPermissionsResult(requestCode, grantResults);
+    }
 
-                // permission was granted, yay! Do the
-                // location-related task you need to do.
-                if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
+    @Override
+    public Activity getViewActivity() {
+        return this;
+    }
 
-                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
-                    mGoogleMap.setMyLocationEnabled(true);
-                }
+    @SuppressLint("MissingPermission") // checked in presenter
+    @Override
+    public void permissionGranted() {
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+        mGoogleMap.setMyLocationEnabled(true);
+    }
 
-            } else {
+    @Override
+    public void permissionDenied() {
+        Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+    }
 
-                // permission denied, boo! Disable the
-                // functionality that depends on this permission.
-                Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
-            }
-        }
+    @Override
+    public void showWeather(int id) {
+        Intent intent = new Intent(this, WeatherActivity.class);
+        intent.putExtra(INTENT_CITY_ID, id);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onError() {
+        Toast.makeText(this, "Location not found", Toast.LENGTH_LONG).show();
     }
 }
