@@ -64,12 +64,10 @@ public class MainActivity extends AppCompatActivity implements SearchPresenter.V
         // Assign adapter to ListView
         listViewResults.setAdapter(adapter);
 
-        listViewResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
-                startActivity(intent);
-            }
+        listViewResults.setOnItemClickListener((adapterView, view, i, l) -> {
+            Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
+            intent.putExtra(WeatherActivity.INTENT_CITY_ID, searchResults.get(i).getWoeid());
+            startActivity(intent);
         });
     }
 

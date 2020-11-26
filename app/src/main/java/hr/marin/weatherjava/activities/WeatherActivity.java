@@ -6,23 +6,29 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
 import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import hr.marin.weatherjava.R;
+import hr.marin.weatherjava.adapters.WeatherItemAdapter;
 import hr.marin.weatherjava.models.ConsolidatedWeather;
 import hr.marin.weatherjava.models.Location;
 import hr.marin.weatherjava.presenters.MapPresenter;
 import hr.marin.weatherjava.presenters.WeatherPresenter;
+import hr.marin.weatherjava.utils.DateParser;
 
 public class WeatherActivity extends AppCompatActivity implements WeatherPresenter.View{
+    public static final String INTENT_CITY_ID = "CITY_ID";
 
     private WeatherPresenter presenter;
 
     private TextView addressTxt, updated_atTxt, statusTxt, tempTxt, temp_minTxt, temp_maxTxt, sunriseTxt,
             sunsetTxt, windTxt, pressureTxt, humidityTxt, predictabilityTxt;
 
-    private TextView nameDay1, nameDay2, nameDay3, nameDay4, stateDay1, stateDay2, stateDay3, stateDay4;
+    private RecyclerView rvWeatherState;
 
     private View loader, mainContainer, errorText;
 
@@ -44,22 +50,15 @@ public class WeatherActivity extends AppCompatActivity implements WeatherPresent
         pressureTxt = findViewById(R.id.pressure);
         humidityTxt = findViewById(R.id.humidity);
         predictabilityTxt = findViewById(R.id.predictability);
-        nameDay1 = findViewById(R.id.name_day1);
-        nameDay2 = findViewById(R.id.name_day2);
-        nameDay3 = findViewById(R.id.name_day3);
-        nameDay4 = findViewById(R.id.name_day4);
-        stateDay1 = findViewById(R.id.state_day1);
-        stateDay2 = findViewById(R.id.state_day2);
-        stateDay3 = findViewById(R.id.state_day3);
-        stateDay4 = findViewById(R.id.state_day4);
         errorText = findViewById(R.id.errorText);
         loader = findViewById(R.id.loader);
         mainContainer = findViewById(R.id.mainContainer);
+        rvWeatherState = (RecyclerView) findViewById(R.id.state_rv);
 
         presenter = new WeatherPresenter(this);
 
         Intent intent = getIntent();
-        int cityId = intent.getIntExtra(MapActivity.INTENT_CITY_ID, 0);
+        int cityId = intent.getIntExtra(INTENT_CITY_ID, 0);
 
         if(cityId != 0) {
             presenter.getLocationWeather(cityId);
@@ -86,37 +85,28 @@ public class WeatherActivity extends AppCompatActivity implements WeatherPresent
         ConsolidatedWeather today = location.getConsolidatedWeather().get(0);
 
         addressTxt.setText(location.getTitle());
-        updated_atTxt.setText(String.format("at %s", presenter.formatDate(today.getCreated(), "HH:mm")));
+        updated_atTxt.setText(String.format("at %s", DateParser.formatDate(today.getCreated(), "HH:mm")));
         statusTxt.setText(today.getWeatherStateName());
         tempTxt.setText(String.format(Locale.getDefault(),"%d°C", today.getTheTemp().intValue()));
         temp_minTxt.setText(String.format(Locale.getDefault(),"Min: %d°C", today.getMinTemp().intValue()));
         temp_maxTxt.setText(String.format(Locale.getDefault(),"Max: %d°C", today.getMaxTemp().intValue()));
-        sunriseTxt.setText(presenter.formatDate(location.getSunRise(), "HH:mm"));
-        sunsetTxt.setText(presenter.formatDate(location.getSunSet(), "HH:mm"));
+        sunriseTxt.setText(DateParser.formatDate(location.getSunRise(), "HH:mm"));
+        sunsetTxt.setText(DateParser.formatDate(location.getSunSet(), "HH:mm"));
         windTxt.setText(String.format(Locale.getDefault(), "%.3f", today.getWindSpeed()));
-        pressureTxt.setText(today.getAirPressure().toString());
+        pressureTxt.setText(String.format(Locale.getDefault(), "%.1f Pa", today.getAirPressure()));
         humidityTxt.setText(String.format(Locale.getDefault(),"%d%%", today.getHumidity()));
         predictabilityTxt.setText(String.format(Locale.getDefault(),"%d%%", today.getPredictability()));
 
-        ConsolidatedWeather day1 = location.getConsolidatedWeather().get(1);
-        ConsolidatedWeather day2 = location.getConsolidatedWeather().get(2);
-        ConsolidatedWeather day3 = location.getConsolidatedWeather().get(3);
-        ConsolidatedWeather day4 = location.getConsolidatedWeather().get(4);
-
-        nameDay1.setText(presenter.formatWeekday(day1.getApplicableDate()));
-        nameDay2.setText(presenter.formatWeekday(day2.getApplicableDate()));
-        nameDay3.setText(presenter.formatWeekday(day3.getApplicableDate()));
-        nameDay4.setText(presenter.formatWeekday(day4.getApplicableDate()));
-
-        stateDay1.setText(day1.getWeatherStateName());
-        stateDay2.setText(day2.getWeatherStateName());
-        stateDay3.setText(day3.getWeatherStateName());
-        stateDay4.setText(day4.getWeatherStateName());
+        List<ConsolidatedWeather> list = location.getConsolidatedWeather().subList(1, location.getConsolidatedWeather().size());
+        WeatherItemAdapter adapter = new WeatherItemAdapter(list);
+        rvWeatherState.setAdapter(adapter);
+        rvWeatherState.setLayoutManager(new LinearLayoutManager(this,  LinearLayoutManager.HORIZONTAL, false));
     }
 
     @Override
     public void onError() {
-        Toast.makeText(this, R.string.search_failed, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.weather_failed, Toast.LENGTH_LONG).show();
+        mainContainer.setVisibility(View.GONE);
         loader.setVisibility(View.GONE);
         errorText.setVisibility(View.VISIBLE);
     }

@@ -1,9 +1,12 @@
 package hr.marin.weatherjava.services;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
+
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import hr.marin.weatherjava.API;
+import hr.marin.weatherjava.utils.API;
 import hr.marin.weatherjava.models.Location;
 import hr.marin.weatherjava.models.SearchResult;
 import hr.marin.weatherjava.services.interfaces.IWeatherService;

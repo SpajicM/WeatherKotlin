@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_weight="1"
+    android:background="#3CF1EBF1"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/textDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Day 1"
+        android:textSize="14sp" />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="5dp" />
+
+    <ImageView
+        android:id="@+id/imageState"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@android:drawable/stat_notify_error"
+        android:contentDescription="@string/state" />
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="5dp" />
+
+    <TextView
+        android:id="@+id/textState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Sunny"
+        android:textSize="14sp" />
+</LinearLayout>

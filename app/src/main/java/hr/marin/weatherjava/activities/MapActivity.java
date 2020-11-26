@@ -28,8 +28,6 @@ import hr.marin.weatherjava.R;
 import hr.marin.weatherjava.presenters.MapPresenter;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, MapPresenter.View {
-    public static final String INTENT_CITY_ID = "CITY_ID";
-
     GoogleMap mGoogleMap;
     SupportMapFragment mapFrag;
     LocationRequest mLocationRequest;
@@ -74,9 +72,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         // Setting a click event handler for the map
-        googleMap.setOnMapClickListener(latLng -> {
-            presenter.getCoordinatesCity(latLng.latitude, latLng.longitude);
-        });
+        googleMap.setOnMapClickListener(latLng -> presenter.getCoordinatesCity(latLng.latitude, latLng.longitude));
 
         presenter.requestPermissions();
     }
@@ -124,7 +120,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void showWeather(int id) {
         Intent intent = new Intent(this, WeatherActivity.class);
-        intent.putExtra(INTENT_CITY_ID, id);
+        intent.putExtra(WeatherActivity.INTENT_CITY_ID, id);
         startActivity(intent);
     }
 

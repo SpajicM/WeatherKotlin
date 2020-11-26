@@ -6,4 +6,13 @@
     <string name="map">Map</string>
     <string name="permission_needed">Location Permission Needed</string>
     <string name="permission_needed_description">This app needs the Location permission, please accept to use location functionality</string>
+    <string name="state">State</string>
+    <string name="weather_failed">Retrieving weather failed.</string>
+    <string name="pressure">Pressure</string>
+    <string name="humidity">Humidity</string>
+    <string name="predictability">Predictability</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="sunset">Sunset</string>
+    <string name="wind">Wind</string>
+    <string name="something_went_wrong">Something went wrong</string>
 </resources>

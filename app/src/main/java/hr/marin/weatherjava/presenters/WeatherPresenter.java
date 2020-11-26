@@ -1,12 +1,15 @@
 package hr.marin.weatherjava.presenters;
 
 import android.view.View;
+import android.widget.ImageView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import hr.marin.weatherjava.models.ConsolidatedWeather;
 import hr.marin.weatherjava.models.Location;
 import hr.marin.weatherjava.services.WeatherService;
 import hr.marin.weatherjava.services.listeners.IWeatherServiceListener;
@@ -18,35 +21,6 @@ public class WeatherPresenter {
     public WeatherPresenter(final View view) {
         this.view = view;
         this.service = new WeatherService();
-    }
-
-    public String formatDate(String oldString, String newFormat) {
-        final String OLD_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSX";
-
-        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.US);
-        Date d = null;
-        try {
-            d = sdf.parse(oldString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        sdf.applyPattern(newFormat);
-        return sdf.format(d);
-    }
-
-
-    public String formatWeekday(String dateString) {
-            final String OLD_FORMAT = "yyyy-MM-dd";
-
-            SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.US);
-            Date d = null;
-            try {
-                d = sdf.parse(dateString);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            sdf.applyPattern("EEEE");
-            return sdf.format(d);
     }
 
     public void getLocationWeather(int id) {
