@@ -48,7 +48,7 @@ class MainActivity: AppCompatActivity(), SearchPresenter.View {
 
         listViewResults.adapter = adapter
 
-        listViewResults.setOnItemClickListener { parent, view, position, id ->
+        listViewResults.setOnItemClickListener { _, _, position, _ ->
             val intent = Intent(this, WeatherActivity::class.java)
             intent.putExtra(WeatherActivity.INTENT_CITY_ID, searchResults[position].woeid)
             startActivity(intent)
