@@ -1,36 +1,30 @@
 package hr.marin.weatherkotlin.utils
 
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 object DateParser {
-    fun formatDate(oldString:String, newFormat:String):String {
+    fun formatDate(oldString: String, newFormat: String): String? {
         val oldFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSX"
-        val sdf = SimpleDateFormat(oldFormat, Locale.US)
-        var d: Date? = null
-        try
-        {
-            d = sdf.parse(oldString)
-        }
-        catch (e:ParseException) {
-            e.printStackTrace()
-        }
-        sdf.applyPattern(newFormat)
-        return sdf.format(d)
+
+        return format(oldString, oldFormat, newFormat)
     }
-    fun formatWeekday(dateString:String):String {
+
+    fun formatWeekday(dateString: String):String {
         val oldFormat = "yyyy-MM-dd"
-        val sdf = SimpleDateFormat(oldFormat, Locale.US)
-        var d: Date? = null
-        try
-        {
-            d = sdf.parse(dateString)
+        val newFormat = "EEEE"
+
+        return format(dateString, oldFormat, newFormat);
+    }
+
+    private fun format(dateString: String, oldFormat: String, newFormat: String): String {
+        val parser = SimpleDateFormat(oldFormat, Locale.US)
+        val formatter = SimpleDateFormat(newFormat, Locale.US)
+        val date = parser.parse(dateString)
+        return if(date != null) {
+            formatter.format(date);
+        } else {
+            "";
         }
-        catch (e:ParseException) {
-            e.printStackTrace()
-        }
-        sdf.applyPattern("EEEE")
-        return sdf.format(d)
     }
 }
